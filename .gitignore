@@ -1,0 +1,22 @@
+# Local environment and secrets
+.env
+.env.*
+!.env.example
+**/secrets/
+**/ssh_keys/
+**/id_ed25519*
+*.pem
+*.key
+
+# Minecraft runtime data
+**/data/
+**/world/
+**/worlds/
+**/backups/
+**/logs/
+**/*.jar
+
+# Local tooling
+.DS_Store
+*.swp
+*.tmp

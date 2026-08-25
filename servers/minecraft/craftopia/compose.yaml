@@ -1,0 +1,63 @@
+services:
+  minecraft:
+    image: ${MINECRAFT_IMAGE:-itzg/minecraft-server:2026.8.2-java25}
+    restart: unless-stopped
+    stop_grace_period: 2m
+    ports:
+      - "${MINECRAFT_PORT:-25565}:25565"
+    environment:
+      EULA: "TRUE"
+      TZ: ${TZ:-America/Los_Angeles}
+
+      # Runtime and loader
+      TYPE: ${MINECRAFT_TYPE:-FORGE}
+      VERSION: ${MINECRAFT_VERSION:-26.2}
+      MEMORY: ${MEMORY:-4G}
+
+      # Desired server configuration
+      SERVER_NAME: ${SERVER_NAME:-Craftopia}
+      SEED: ${SEED:-8500081009970950196}
+      ENABLE_WHITELIST: ${ENABLE_WHITELIST:-true}
+      DIFFICULTY: ${DIFFICULTY:-normal}
+      ENABLE_COMMAND_BLOCK: ${ENABLE_COMMAND_BLOCK:-true}
+      PLAYER_IDLE_TIMEOUT: ${PLAYER_IDLE_TIMEOUT:-30}
+      MAX_PLAYERS: ${MAX_PLAYERS:-50}
+      ENABLE_ROLLING_LOGS: ${ENABLE_ROLLING_LOGS:-true}
+      ENABLE_AUTOPAUSE: ${ENABLE_AUTOPAUSE:-false}
+
+      # RCON stays private and is shared with trusted services in this stack.
+      ENABLE_RCON: "true"
+      RCON_PASSWORD: ${RCON_PASSWORD:?Set RCON_PASSWORD in Coolify}
+
+      # One project slug or pinned project version per line.
+      MODRINTH_PROJECTS: "@/extras/modrinth.txt"
+    volumes:
+      - craftopia-data:/data
+      - type: bind
+        source: ./mods/modrinth.txt
+        target: /extras/modrinth.txt
+        read_only: true
+
+  backups:
+    image: ${BACKUP_IMAGE:-itzg/mc-backup:2026.8.2}
+    restart: unless-stopped
+    depends_on:
+      minecraft:
+        condition: service_healthy
+    environment:
+      TZ: ${TZ:-America/Los_Angeles}
+      RCON_HOST: minecraft
+      RCON_PASSWORD: ${RCON_PASSWORD:?Set RCON_PASSWORD in Coolify}
+      INITIAL_DELAY: "0"
+      BACKUP_INTERVAL: ${BACKUP_INTERVAL:-24h}
+      PAUSE_IF_NO_PLAYERS: ${PAUSE_IF_NO_PLAYERS:-true}
+      PRUNE_BACKUPS_COUNT: ${PRUNE_BACKUPS_COUNT:-7}
+      PRUNE_BACKUPS_DAYS: ${PRUNE_BACKUPS_DAYS:-30}
+      BACKUP_NAME: craftopia
+    volumes:
+      - craftopia-data:/data:ro
+      - craftopia-backups:/backups
+
+volumes:
+  craftopia-data:
+  craftopia-backups:
