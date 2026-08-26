@@ -16,7 +16,7 @@ to store changing world data in the repository.
 
 ## Deployment unit
 
-Every `servers/minecraft/<instance>/compose.yaml` is a standalone Coolify
+Every `servers/minecraft/<instance>/docker-compose.yaml` is a standalone Coolify
 application. A change to one instance should not restart another instance.
 Coolify supplies the private network for the services in an application, so the
 Compose definitions do not create custom networks or fixed container names.
@@ -50,9 +50,10 @@ not host loss. Copy backup archives to another machine or object-storage target.
 
 ## Mods
 
-Small curated mod sets use a tracked Modrinth listing file. The Minecraft image
-downloads compatible artifacts during startup and removes artifacts deleted from
-the manifest. Pin a project version when reproducibility matters:
+Small curated mod sets use a tracked Modrinth listing file, delivered to the
+container as a Compose config. The Minecraft image downloads compatible
+artifacts during startup and removes artifacts deleted from the manifest. Pin a
+project version when reproducibility matters:
 
 ```text
 fabric-api

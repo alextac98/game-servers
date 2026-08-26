@@ -6,7 +6,7 @@ stack is intended to be deployed as a standalone Coolify application.
 ## Local validation
 
 ```sh
-docker compose --env-file .env.example -f compose.yaml config --quiet
+docker compose --env-file .env.example -f docker-compose.yaml config --quiet
 ```
 
 To run locally, copy `.env.example` to `.env`, replace the RCON password, and use:
@@ -23,11 +23,11 @@ Git.
 
 ## Coolify
 
-Use `/servers/minecraft/craftopia` as the base directory and `/compose.yaml` as
-the Compose location. Enable repository preservation for the mounted mod list,
-and set a strong `RCON_PASSWORD` in Coolify before deploying. Also add the
-multiline `SSH_TUNNEL_PRIVATE_KEY` and `SSH_TUNNEL_KNOWN_HOSTS` secrets described
-in the [remote-access runbook](../../../docs/remote-access.md).
+Use `/servers/minecraft/craftopia` as the base directory and
+`/docker-compose.yaml` as the Compose location. Set a strong `RCON_PASSWORD` in
+Coolify before deploying. Also add the multiline `SSH_TUNNEL_PRIVATE_KEY` and
+`SSH_TUNNEL_KNOWN_HOSTS` secrets described in the
+[remote-access runbook](../../../docs/remote-access.md).
 
 LAN players connect to TCP `25565` on the Coolify host. Remote players connect
 to `mc.alextac.com:25565`, which the VPS forwards through the `tunnel` sidecar.

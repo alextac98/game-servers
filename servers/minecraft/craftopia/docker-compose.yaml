@@ -33,10 +33,9 @@ services:
       MODRINTH_PROJECTS: "@/extras/modrinth.txt"
     volumes:
       - craftopia-data:/data
-      - type: bind
-        source: ./mods/modrinth.txt
+    configs:
+      - source: modrinth_projects
         target: /extras/modrinth.txt
-        read_only: true
 
   backups:
     image: ${BACKUP_IMAGE:-itzg/mc-backup:2026.8.2}
@@ -87,6 +86,10 @@ services:
 volumes:
   craftopia-data:
   craftopia-backups:
+
+configs:
+  modrinth_projects:
+    file: ./mods/modrinth.txt
 
 secrets:
   ssh_tunnel_private_key:

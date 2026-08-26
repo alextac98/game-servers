@@ -12,7 +12,7 @@
    ```sh
    docker compose \
      --env-file servers/minecraft/<instance>/.env.example \
-     -f servers/minecraft/<instance>/compose.yaml \
+     -f servers/minecraft/<instance>/docker-compose.yaml \
      config --quiet
    ```
 
@@ -26,12 +26,12 @@ Create a Git-based application using the Docker Compose build pack and configure
 | --- | --- |
 | Branch | `main` |
 | Base directory | `/servers/minecraft/<instance>` |
-| Docker Compose location | `/compose.yaml` |
+| Docker Compose location | `/docker-compose.yaml` |
 | Watch path | `servers/minecraft/<instance>/**` |
 | Preserve repository during deployment | Enabled |
 
-Preserving the checkout is required because the Modrinth listing file is mounted
-from the repository into the Minecraft container.
+The tracked Modrinth listing is materialized as a Compose config, so it reaches
+the container as a file without relying on a repository-relative runtime bind.
 
 Set `RCON_PASSWORD`, `SSH_TUNNEL_PRIVATE_KEY`, and `SSH_TUNNEL_KNOWN_HOSTS` in
 Coolify before the first deployment. The two SSH values are multiline,

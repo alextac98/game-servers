@@ -20,7 +20,7 @@ lives in Docker volumes and is intentionally not committed.
 └── servers/
     └── minecraft/
         └── craftopia/
-            ├── compose.yaml
+            ├── docker-compose.yaml
             ├── .env.example
             ├── README.md
             ├── config/
