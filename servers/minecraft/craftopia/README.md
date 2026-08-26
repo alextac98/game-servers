@@ -26,7 +26,7 @@ Git.
 Use `/servers/minecraft/craftopia` as the base directory and
 `/docker-compose.yaml` as the Compose location. Set a strong `RCON_PASSWORD` in
 Coolify before deploying. Also add the multiline `SSH_TUNNEL_PRIVATE_KEY` and
-`SSH_TUNNEL_KNOWN_HOSTS` secrets described in the
+verified `SSH_TUNNEL_KNOWN_HOSTS` value described in the
 [remote-access runbook](../../../docs/remote-access.md).
 
 LAN players connect to TCP `25565` on the Coolify host. Remote players connect

@@ -125,11 +125,11 @@ Add these environment variables to the Craftopia application:
 | `SSH_TUNNEL_PRIVATE_KEY` | Complete multiline contents of `craftopia_tunnel` |
 | `SSH_TUNNEL_KNOWN_HOSTS` | Complete verified line from `craftopia_known_hosts` |
 
-Mark the two credential values as runtime-only secrets. Add them manually in
-Coolify's developer view if it does not automatically discover variables used
-only as top-level Compose secret sources. The Compose model mounts them as
-read-only files under `/run/secrets`; they are not placed in the sidecar's
-environment.
+Mark the two credential values as runtime-only and disable Build Variable for
+both. Enter the private key using Normal View with Multiline enabled. Coolify's
+Compose parser only supports file-backed secrets, so the sidecar receives these
+runtime variables, writes them into its private `/tmp` tmpfs, unsets them, and
+then starts SSH. Treat access to Coolify and the Docker daemon as privileged.
 
 ## 6. Deploy and verify
 
@@ -162,6 +162,6 @@ fails closed; verify the new fingerprint out of band before updating
 
 - [OpenSSH `sshd_config`](https://man.openbsd.org/sshd_config)
 - [OpenSSH `authorized_keys`](https://man.openbsd.org/sshd#AUTHORIZED_KEYS_FILE_FORMAT)
-- [Docker Compose secrets](https://docs.docker.com/compose/how-tos/use-secrets/)
+- [Coolify environment variables](https://coolify.io/docs/knowledge-base/environment-variables)
 - [Coolify Docker Compose](https://coolify.io/docs/knowledge-base/docker/compose)
 - [LinuxServer OpenSSH container](https://github.com/linuxserver/docker-openssh-server)

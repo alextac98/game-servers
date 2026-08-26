@@ -36,10 +36,12 @@ avoids repository-relative bind mounts, which do not share the same filesystem
 namespace as Coolify's deployment helper container.
 
 Set `RCON_PASSWORD`, `SSH_TUNNEL_PRIVATE_KEY`, and `SSH_TUNNEL_KNOWN_HOSTS` in
-Coolify before the first deployment. The two SSH values are multiline,
-runtime-only secrets; add them manually if Coolify does not discover environment
-variables used as Compose secret sources. Review all other variables detected
-from Compose and override only values that should differ from the Git defaults.
+Coolify before the first deployment. The private key is multiline; both SSH
+values and the RCON password are runtime-only variables. Disable their Build
+Variable setting so they are never passed to the image build. The tunnel copies
+its SSH values into a private tmpfs before starting SSH. Review all other
+variables detected from Compose and override only values that should differ from
+the Git defaults.
 
 Complete the VPS endpoint, firewall, DNS, and key-verification steps in
 [remote access](remote-access.md) before enabling the tunnel.
