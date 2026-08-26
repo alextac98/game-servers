@@ -30,12 +30,10 @@ services:
       RCON_PASSWORD: ${RCON_PASSWORD:?Set RCON_PASSWORD in Coolify}
 
       # One project slug or pinned project version per line.
-      MODRINTH_PROJECTS: "@/extras/modrinth.txt"
+      MODRINTH_PROJECTS: |
+        fallingtree:26.2-26.2.0.3
     volumes:
       - craftopia-data:/data
-    configs:
-      - source: modrinth_projects
-        target: /extras/modrinth.txt
 
   backups:
     image: ${BACKUP_IMAGE:-itzg/mc-backup:2026.8.2}
@@ -86,10 +84,6 @@ services:
 volumes:
   craftopia-data:
   craftopia-backups:
-
-configs:
-  modrinth_projects:
-    file: ./mods/modrinth.txt
 
 secrets:
   ssh_tunnel_private_key:

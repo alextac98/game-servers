@@ -6,7 +6,7 @@ The repository, Coolify, and Minecraft each own a different kind of state:
 
 | Owner | Responsibilities |
 | --- | --- |
-| Git | Container versions, Minecraft version and loader, mod manifests, declarative settings, backup policy, and documentation |
+| Git | Container versions, Minecraft version and loader, mod lists, declarative settings, backup policy, and documentation |
 | Coolify | Deployment, secret values, domains, environment overrides, and application lifecycle |
 | Docker volumes | Worlds, generated files, whitelist and operator state, logs, and backup archives |
 | Minecraft/RCON | Runtime actions such as whitelist, kick, ban, save, and announcements |
@@ -50,15 +50,16 @@ not host loss. Copy backup archives to another machine or object-storage target.
 
 ## Mods
 
-Small curated mod sets use a tracked Modrinth listing file, delivered to the
-container as a Compose config. The Minecraft image downloads compatible
-artifacts during startup and removes artifacts deleted from the manifest. Pin a
-project version when reproducibility matters:
+Small curated mod sets use the multiline `MODRINTH_PROJECTS` value directly in
+Compose. The Minecraft image downloads compatible artifacts during startup and
+removes artifacts deleted from the list. Pin a project version when
+reproducibility matters:
 
-```text
-fabric-api
-lithium:0.15.0
-spark?
+```yaml
+MODRINTH_PROJECTS: |
+  fabric-api
+  lithium:0.15.0
+  spark?
 ```
 
 Use Packwiz instead when Craftopia needs a distributable client and server

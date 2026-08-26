@@ -6,7 +6,8 @@
    instance name.
 2. Change its named volumes, server name, port, and other defaults. Volume names
    must be unique and should not be changed after the first deployment.
-3. Replace the mod manifest and document any instance-specific operating notes.
+3. Replace the inline `MODRINTH_PROJECTS` list and document any instance-specific
+   operating notes.
 4. Validate the Compose model:
 
    ```sh
@@ -28,10 +29,11 @@ Create a Git-based application using the Docker Compose build pack and configure
 | Base directory | `/servers/minecraft/<instance>` |
 | Docker Compose location | `/docker-compose.yaml` |
 | Watch path | `servers/minecraft/<instance>/**` |
-| Preserve repository during deployment | Enabled |
+| Preserve repository during deployment | Not required |
 
-The tracked Modrinth listing is materialized as a Compose config, so it reaches
-the container as a file without relying on a repository-relative runtime bind.
+The Modrinth project list is a multiline value in Compose. Keeping it inline
+avoids repository-relative bind mounts, which do not share the same filesystem
+namespace as Coolify's deployment helper container.
 
 Set `RCON_PASSWORD`, `SSH_TUNNEL_PRIVATE_KEY`, and `SSH_TUNNEL_KNOWN_HOSTS` in
 Coolify before the first deployment. The two SSH values are multiline,

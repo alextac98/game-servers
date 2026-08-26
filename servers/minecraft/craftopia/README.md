@@ -36,10 +36,11 @@ failed SSH session; persistent failures are visible in the service logs.
 
 ## Mods
 
-Edit [`mods/modrinth.txt`](mods/modrinth.txt) and redeploy. Prefer pinned versions
-for important mods. Verify loader and Minecraft compatibility before upgrading.
+Edit the multiline `MODRINTH_PROJECTS` value in `docker-compose.yaml` and
+redeploy. Prefer pinned versions for important mods. Verify loader and Minecraft
+compatibility before upgrading.
 
-The initial manifest installs FallingTree from a pinned Modrinth release.
+The initial list installs FallingTree from a pinned Modrinth release.
 
 ## Operations
 

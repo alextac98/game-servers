@@ -24,7 +24,6 @@ lives in Docker volumes and is intentionally not committed.
             ├── .env.example
             ├── README.md
             ├── config/
-            ├── mods/
             └── tunnel/
 ```
 
@@ -33,7 +32,7 @@ deployable Coolify application.
 
 ## Workflow
 
-1. Change a server's Compose definition, mod manifest, or tracked configuration.
+1. Change a server's Compose definition, inline mod list, or tracked configuration.
 2. Validate it locally with the server's `.env.example` file.
 3. Review and merge the change to `main`.
 4. Coolify deploys only the affected server through its configured watch path.
