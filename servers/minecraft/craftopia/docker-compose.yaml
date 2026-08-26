@@ -64,7 +64,9 @@ services:
         condition: service_healthy
     read_only: true
     tmpfs:
-      - /tmp:size=1m,mode=0700
+      # The image runs as UID/GID 10001, so make the private tmpfs writable by
+      # that account instead of Docker's default root ownership.
+      - /tmp:size=1m,mode=0700,uid=10001,gid=10001
     cap_drop:
       - ALL
     security_opt:
