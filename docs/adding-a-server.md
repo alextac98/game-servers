@@ -33,15 +33,23 @@ Create a Git-based application using the Docker Compose build pack and configure
 Preserving the checkout is required because the Modrinth listing file is mounted
 from the repository into the Minecraft container.
 
-Set `RCON_PASSWORD` in Coolify before the first deployment. Review all other
-variables detected from Compose and override only values that should differ from
-the Git defaults.
+Set `RCON_PASSWORD`, `SSH_TUNNEL_PRIVATE_KEY`, and `SSH_TUNNEL_KNOWN_HOSTS` in
+Coolify before the first deployment. The two SSH values are multiline,
+runtime-only secrets; add them manually if Coolify does not discover environment
+variables used as Compose secret sources. Review all other variables detected
+from Compose and override only values that should differ from the Git defaults.
+
+Complete the VPS endpoint, firewall, DNS, and key-verification steps in
+[remote access](remote-access.md) before enabling the tunnel.
 
 ## First-deployment checks
 
 - The `minecraft` service becomes healthy.
 - The `backups` service connects to RCON and creates its initial archive.
-- Port `25565` is reachable only from the intended network.
+- The `tunnel` service remains running and its logs show no forwarding or host
+  key errors.
+- TCP `25565` is reachable through the intended LAN and VPS paths, while RCON
+  remains unreachable externally.
 - The world seed, loader, version, and whitelist setting are correct.
 - A backup archive can be restored before inviting players.
 

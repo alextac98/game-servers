@@ -8,6 +8,9 @@
 *.pem
 *.key
 
+# VPS OpenSSH runtime state, including private host keys
+docs/vps-tunnel/config/
+
 # Minecraft runtime data
 **/data/
 **/world/

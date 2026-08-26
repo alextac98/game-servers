@@ -1,0 +1,19 @@
+services:
+  openssh-server:
+    image: ${OPENSSH_IMAGE:-lscr.io/linuxserver/openssh-server:10.3_p1-r0-ls233}
+    restart: unless-stopped
+    ports:
+      - "${VPS_SSH_PORT:-25522}:2222"
+      - "${VPS_MINECRAFT_PORT:-25565}:25565"
+    environment:
+      PUID: ${PUID:-1000}
+      PGID: ${PGID:-1000}
+      TZ: ${TZ:-America/Los_Angeles}
+      USER_NAME: ${SSH_TUNNEL_USER:-minecraft-tunnel}
+      PUBLIC_KEY: ${SSH_TUNNEL_AUTHORIZED_KEY:?Set the restricted public key in .env}
+      SUDO_ACCESS: "false"
+      PASSWORD_ACCESS: "false"
+      LOG_STDOUT: "true"
+    volumes:
+      - ./config:/config
+      - ./sshd_config.d:/config/sshd/sshd_config.d

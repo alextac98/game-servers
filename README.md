@@ -12,7 +12,11 @@ lives in Docker volumes and is intentionally not committed.
 │   ├── adding-a-server.md
 │   ├── architecture.md
 │   ├── disaster-recovery.md
-│   └── networking.md
+│   ├── networking.md
+│   ├── remote-access.md
+│   └── vps-tunnel/
+│       ├── compose.yaml
+│       └── sshd_config.d/
 └── servers/
     └── minecraft/
         └── craftopia/
@@ -20,7 +24,8 @@ lives in Docker volumes and is intentionally not committed.
             ├── .env.example
             ├── README.md
             ├── config/
-            └── mods/
+            ├── mods/
+            └── tunnel/
 ```
 
 Each directory directly below `servers/minecraft/` is an independently

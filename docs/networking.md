@@ -11,15 +11,14 @@ access with the host firewall when the machine also has a public interface.
 
 ## Internet access
 
-Choose one ingress method:
+Craftopia uses an outbound reverse SSH tunnel. The `tunnel` sidecar connects to
+the VPS and asks its SSH server to listen publicly on TCP `25565`; traffic is
+then carried back to `minecraft:25565` on the private Compose network. This does
+not require an inbound router port-forward at home.
 
-1. Forward TCP `25565` from the router to the Coolify host.
-2. Use a private overlay network such as Tailscale for known players.
-3. Use a reverse tunnel when the host is behind CGNAT.
-
-If a reverse tunnel must address the Minecraft container by service name, run it
-as a sidecar in the same Compose application. Keep its private key or token in
-Coolify or a host-mounted secret; never commit it.
+The containerized VPS endpoint is restricted to that one remote forward, and the
+sidecar pins its SSH host key. See [remote access](remote-access.md) for the VPS,
+Coolify, firewall, DNS, and verification steps.
 
 ## Internal ports
 

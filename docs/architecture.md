@@ -26,10 +26,17 @@ The current Craftopia stack contains:
 - `minecraft`: the Java Edition server.
 - `backups`: a sidecar that coordinates `save-off`, `save-all`, and `save-on`
   over the private RCON connection before archiving the data volume.
+- `tunnel`: an unprivileged OpenSSH client that exposes only the Minecraft game
+  port through the public VPS and reconnects after network interruptions.
 
 RCON port `25575` is never published to the host. A future operator UI should be
 added to the same Compose stack and connect to the `minecraft` service over the
 private Coolify network.
+
+LAN players connect directly to the Coolify host. Remote players connect to the
+containerized SSH endpoint on the VPS, which passes TCP `25565` through the
+reverse session to the `minecraft` service. The VPS exposes no route to RCON or
+the persistent volumes.
 
 ## Persistent data
 
@@ -58,9 +65,10 @@ modpack. Do not commit downloaded JAR files.
 
 ## Secrets
 
-Compose declares `RCON_PASSWORD` as required. Store it in Coolify and use the
-same value for the Minecraft and backup services. Never put real credentials in
-`.env.example`, Compose, or documentation.
+Compose declares `RCON_PASSWORD`, the tunnel private key, and the pinned VPS host
+key as required. Store them in Coolify. Compose mounts the two SSH values as
+read-only runtime secrets rather than placing them in the container environment.
+Never put real credentials in `.env.example`, Compose, or documentation.
 
 ## Upstream references
 

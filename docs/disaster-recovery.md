@@ -45,6 +45,9 @@ Recreating the Compose stack from Git does not recreate the world. A complete
 recovery therefore needs:
 
 - The Git repository and desired commit.
-- Coolify secrets, especially `RCON_PASSWORD`.
+- Coolify secrets: `RCON_PASSWORD`, the tunnel private key, and the verified VPS
+  host-key line.
 - An off-host world backup.
-- Network/DNS records and router or tunnel configuration.
+- The VPS tunnel Compose application, persisted SSH host keys, forwarding
+  restriction, firewall rule, and DNS record described in
+  [remote access](remote-access.md).

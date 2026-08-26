@@ -12,8 +12,11 @@ docker compose --env-file .env.example -f compose.yaml config --quiet
 To run locally, copy `.env.example` to `.env`, replace the RCON password, and use:
 
 ```sh
-docker compose up -d
+docker compose up -d minecraft backups
 ```
+
+That command leaves the public tunnel disabled. Start the full stack only after
+replacing the placeholder SSH secrets with the verified VPS credentials.
 
 The local `.env`, world data, downloaded mods, and backup archives are ignored by
 Git.
@@ -22,17 +25,21 @@ Git.
 
 Use `/servers/minecraft/craftopia` as the base directory and `/compose.yaml` as
 the Compose location. Enable repository preservation for the mounted mod list,
-and set a strong `RCON_PASSWORD` in Coolify before deploying.
+and set a strong `RCON_PASSWORD` in Coolify before deploying. Also add the
+multiline `SSH_TUNNEL_PRIVATE_KEY` and `SSH_TUNNEL_KNOWN_HOSTS` secrets described
+in the [remote-access runbook](../../../docs/remote-access.md).
 
-The server publishes TCP `25565`. RCON remains internal to the Compose network.
+LAN players connect to TCP `25565` on the Coolify host. Remote players connect
+to `mc.alextac.com:25565`, which the VPS forwards through the `tunnel` sidecar.
+RCON remains internal to the Compose network. Docker restarts the tunnel after a
+failed SSH session; persistent failures are visible in the service logs.
 
 ## Mods
 
 Edit [`mods/modrinth.txt`](mods/modrinth.txt) and redeploy. Prefer pinned versions
 for important mods. Verify loader and Minecraft compatibility before upgrading.
 
-The manifest starts empty because the legacy Compose file did not declare any
-mods.
+The initial manifest installs FallingTree from a pinned Modrinth release.
 
 ## Operations
 

@@ -58,6 +58,38 @@ services:
       - craftopia-data:/data:ro
       - craftopia-backups:/backups
 
+  tunnel:
+    build:
+      context: ./tunnel
+    restart: unless-stopped
+    depends_on:
+      minecraft:
+        condition: service_healthy
+    read_only: true
+    tmpfs:
+      - /tmp:size=1m,mode=0700
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    environment:
+      SSH_TUNNEL_HOST: ${SSH_TUNNEL_HOST:-mc.alextac.com}
+      SSH_TUNNEL_PORT: ${SSH_TUNNEL_PORT:-25522}
+      SSH_TUNNEL_USER: ${SSH_TUNNEL_USER:-minecraft-tunnel}
+      SSH_TUNNEL_BIND_ADDRESS: ${SSH_TUNNEL_BIND_ADDRESS:-0.0.0.0}
+      SSH_TUNNEL_REMOTE_PORT: ${SSH_TUNNEL_REMOTE_PORT:-25565}
+      SSH_TUNNEL_TARGET_HOST: minecraft
+      SSH_TUNNEL_TARGET_PORT: "25565"
+    secrets:
+      - ssh_tunnel_private_key
+      - ssh_tunnel_known_hosts
+
 volumes:
   craftopia-data:
   craftopia-backups:
+
+secrets:
+  ssh_tunnel_private_key:
+    environment: SSH_TUNNEL_PRIVATE_KEY
+  ssh_tunnel_known_hosts:
+    environment: SSH_TUNNEL_KNOWN_HOSTS
