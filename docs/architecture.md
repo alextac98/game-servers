@@ -68,8 +68,11 @@ modpack. Do not commit downloaded JAR files.
 ## Secrets
 
 Compose declares `RCON_PASSWORD`, the tunnel private key, and the pinned VPS host
-key as required. Store them in Coolify. Compose mounts the two SSH values as
-read-only runtime secrets rather than placing them in the container environment.
+key as required. Store them in Coolify as runtime-only variables with build-time
+access disabled. Coolify does not support environment-backed Compose secrets, so
+the tunnel entrypoint writes the two SSH values into its private tmpfs, unsets
+them, and then starts SSH. Docker administrators can still inspect the original
+container configuration, so access to Coolify and Docker remains privileged.
 Never put real credentials in `.env.example`, Compose, or documentation.
 
 ## Upstream references

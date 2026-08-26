@@ -77,16 +77,9 @@ services:
       SSH_TUNNEL_REMOTE_PORT: ${SSH_TUNNEL_REMOTE_PORT:-25565}
       SSH_TUNNEL_TARGET_HOST: minecraft
       SSH_TUNNEL_TARGET_PORT: "25565"
-    secrets:
-      - ssh_tunnel_private_key
-      - ssh_tunnel_known_hosts
+      SSH_TUNNEL_PRIVATE_KEY: ${SSH_TUNNEL_PRIVATE_KEY:?Set the tunnel private key in Coolify}
+      SSH_TUNNEL_KNOWN_HOSTS: ${SSH_TUNNEL_KNOWN_HOSTS:?Set the verified VPS host key in Coolify}
 
 volumes:
   craftopia-data:
   craftopia-backups:
-
-secrets:
-  ssh_tunnel_private_key:
-    environment: SSH_TUNNEL_PRIVATE_KEY
-  ssh_tunnel_known_hosts:
-    environment: SSH_TUNNEL_KNOWN_HOSTS

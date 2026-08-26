@@ -1,9 +1,8 @@
 #!/bin/sh
 set -eu
 
-private_key=/run/secrets/ssh_tunnel_private_key
-known_hosts=/run/secrets/ssh_tunnel_known_hosts
 runtime_key=/tmp/id_ed25519
+runtime_known_hosts=/tmp/known_hosts
 
 for variable in \
   SSH_TUNNEL_HOST \
@@ -21,21 +20,26 @@ do
   fi
 done
 
-if [ ! -s "$private_key" ]; then
-  echo "SSH private-key secret is missing or empty" >&2
+if [ -z "${SSH_TUNNEL_PRIVATE_KEY:-}" ]; then
+  echo "Required variable SSH_TUNNEL_PRIVATE_KEY is empty" >&2
   exit 1
 fi
 
-if [ ! -s "$known_hosts" ]; then
-  echo "SSH known-hosts secret is missing or empty" >&2
+if [ -z "${SSH_TUNNEL_KNOWN_HOSTS:-}" ]; then
+  echo "Required variable SSH_TUNNEL_KNOWN_HOSTS is empty" >&2
   exit 1
 fi
 
-# Compose secrets are read-only and may be too permissive for OpenSSH. Copy the
-# key into the container's ephemeral tmpfs with the required permissions.
+# Coolify supplies multiline runtime variables. Materialize them only in the
+# container's ephemeral tmpfs with the permissions OpenSSH requires.
 umask 077
-cp "$private_key" "$runtime_key"
+printf '%s\n' "$SSH_TUNNEL_PRIVATE_KEY" > "$runtime_key"
+printf '%s\n' "$SSH_TUNNEL_KNOWN_HOSTS" > "$runtime_known_hosts"
 chmod 600 "$runtime_key"
+chmod 600 "$runtime_known_hosts"
+
+# Do not pass either credential into the long-running SSH process environment.
+unset SSH_TUNNEL_PRIVATE_KEY SSH_TUNNEL_KNOWN_HOSTS
 
 exec ssh -N -T \
   -i "$runtime_key" \
@@ -53,5 +57,5 @@ exec ssh -N -T \
   -o ServerAliveCountMax=3 \
   -o ServerAliveInterval=30 \
   -o StrictHostKeyChecking=yes \
-  -o UserKnownHostsFile="$known_hosts" \
+  -o UserKnownHostsFile="$runtime_known_hosts" \
   -- "$SSH_TUNNEL_HOST"
