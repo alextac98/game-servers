@@ -9,10 +9,11 @@ stack is intended to be deployed as a standalone Coolify application.
 docker compose --env-file .env.example -f docker-compose.yaml config --quiet
 ```
 
-To run locally, copy `.env.example` to `.env`, replace the RCON password, and use:
+To run locally, copy `.env.example` to `.env`, replace both the RCON and web UI
+passwords, and use:
 
 ```sh
-docker compose up -d minecraft backups
+docker compose up -d minecraft backups rcon-web console
 ```
 
 That command leaves the public tunnel disabled. Start the full stack only after
@@ -25,7 +26,9 @@ Git.
 
 Use `/servers/minecraft/craftopia` as the base directory and
 `/docker-compose.yaml` as the Compose location. Set a strong `RCON_PASSWORD` in
-Coolify before deploying. Also add the multiline `SSH_TUNNEL_PRIVATE_KEY` and
+Coolify before deploying. Set a separate strong `RCON_WEB_PASSWORD` for the web
+UI login, and optionally set `RCON_WEB_USERNAME` (default: `admin`). Keep passwords
+runtime-only with Build Variable disabled. Also add the multiline `SSH_TUNNEL_PRIVATE_KEY` and
 verified `SSH_TUNNEL_KNOWN_HOSTS` value described in the
 [remote-access runbook](../../../docs/remote-access.md).
 
@@ -44,9 +47,71 @@ The initial list installs FallingTree from a pinned Modrinth release.
 
 ## Operations
 
-Whitelist and other live administration should be performed through RCON. An
-authenticated operator UI can be added later without changing the world volume
-or mod-management model.
+Use the `rcon-web` browser console for whitelist and other live administration.
+Coolify continues to own deployments, container restarts, and container logs;
+Git owns mod lists and deployment configuration.
+
+### Browser administration
+
+The [RCON Web Admin container](https://github.com/itzg/docker-rcon-web-admin)
+connects to `minecraft:25575` on the private Compose network. It needs no world
+volume or Docker socket access. Its database and dashboard settings persist in
+`craftopia-rcon-web`; keep that volume across redeploys. The configured username,
+password, and Minecraft connection are reapplied from environment variables on
+startup, so change those values in Coolify rather than only in the UI.
+
+The `console` proxy combines the page and WebSocket on one endpoint:
+`https://console.mc.alextac.com` serves the UI and
+`wss://console.mc.alextac.com/ws` carries console commands. The underlying
+`rcon-web` ports are internal to Docker.
+
+In Coolify:
+
+1. Assign `https://console.mc.alextac.com:8080` to the **console** service's
+   Domains field. The `:8080` selects the internal proxy port; open the site
+   without that suffix. Do not assign a domain to `rcon-web`.
+2. Point DNS for `console.mc.alextac.com` to an address that reaches the Coolify
+   HTTPS proxy and let Coolify provision a certificate for that exact hostname.
+   The existing game-only VPS tunnel does not forward web traffic; pointing DNS
+   at that VPS alone is insufficient.
+3. Set `RCON_WEB_PASSWORD` and deploy. The default
+   `RCON_WEB_WEBSOCKET_URL_SSL` is `wss://console.mc.alextac.com/ws`. If an earlier
+   deployment set it to a different domain, update the saved Coolify variable.
+4. Open <https://console.mc.alextac.com>, log in with
+   `RCON_WEB_USERNAME` / `RCON_WEB_PASSWORD`, select Craftopia, and add a Console
+   widget. Run Minecraft commands without the `rcon-cli` prefix:
+
+   ```text
+   whitelist list
+   whitelist add YOUR_JAVA_PROFILE_NAME
+   list
+   ```
+
+The image uses an older Node.js runtime. Keep access restricted through a VPN
+or an authentication gateway covering both the page and `/ws`.
+
+For local access without DNS or HTTPS, the proxy also binds to the Docker host's
+loopback port 4326. Forward that single port from your computer:
+
+```sh
+ssh -N -o ExitOnForwardFailure=yes \
+  -L 4326:127.0.0.1:4326 \
+  YOUR_SSH_USER@YOUR_COOLIFY_HOST
+```
+
+Use your normal SSH account on the Docker/Coolify host, not the restricted VPS
+`minecraft-tunnel` account. Open <http://localhost:4326>; the default non-TLS
+WebSocket URL is `ws://localhost:4326/ws`.
+
+For direct access over a trusted LAN or VPN, set `RCON_WEB_BIND_ADDRESS` to the
+Docker host's LAN/VPN IP and `RCON_WEB_WEBSOCKET_URL=ws://THAT_IP:4326/ws`, then
+redeploy. Both connections use `http://THAT_IP:4326` and its WebSocket equivalent;
+no port 4327 forwarding is needed.
+
+If the page loads but the console stays disconnected, check browser access to
+the WebSocket endpoint first, then check the `rcon-web` logs and that its RCON
+password matches Minecraft. Verify persistence by redeploying and confirming
+the dashboard and `whitelist list` output are retained.
 
 ### Restore allowlist access
 

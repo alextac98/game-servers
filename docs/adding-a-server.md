@@ -35,7 +35,7 @@ The Modrinth project list is a multiline value in Compose. Keeping it inline
 avoids repository-relative bind mounts, which do not share the same filesystem
 namespace as Coolify's deployment helper container.
 
-Set `RCON_PASSWORD`, `SSH_TUNNEL_PRIVATE_KEY`, and `SSH_TUNNEL_KNOWN_HOSTS` in
+Set `RCON_PASSWORD`, a separate `RCON_WEB_PASSWORD`, `SSH_TUNNEL_PRIVATE_KEY`, and `SSH_TUNNEL_KNOWN_HOSTS` in
 Coolify before the first deployment. The private key is multiline; both SSH
 values and the RCON password are runtime-only variables. Disable their Build
 Variable setting so they are never passed to the image build. The tunnel copies
@@ -50,6 +50,9 @@ Complete the VPS endpoint, firewall, DNS, and key-verification steps in
 
 - The `minecraft` service becomes healthy.
 - The `backups` service connects to RCON and creates its initial archive.
+- The `rcon-web` service accepts the configured UI login and its Console widget
+  can run `whitelist list` through the private RCON connection. Follow the
+  [browser access instructions](../servers/minecraft/craftopia/README.md#browser-administration).
 - The `tunnel` service remains running and its logs show no forwarding or host
   key errors.
 - TCP `25565` is reachable through the intended LAN and VPS paths, while RCON
