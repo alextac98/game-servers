@@ -18,6 +18,8 @@ services:
       SERVER_NAME: ${SERVER_NAME:-Craftopia}
       SEED: ${SEED:-8500081009970950196}
       ENABLE_WHITELIST: ${ENABLE_WHITELIST:-true}
+      # RCON owns membership; preserve /data/whitelist.json across restarts.
+      EXISTING_WHITELIST_FILE: "SKIP"
       DIFFICULTY: ${DIFFICULTY:-normal}
       ENABLE_COMMAND_BLOCK: ${ENABLE_COMMAND_BLOCK:-true}
       PLAYER_IDLE_TIMEOUT: ${PLAYER_IDLE_TIMEOUT:-30}
