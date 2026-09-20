@@ -48,5 +48,54 @@ Whitelist and other live administration should be performed through RCON. An
 authenticated operator UI can be added later without changing the world volume
 or mod-management model.
 
+### Restore allowlist access
+
+If Minecraft reports "You are not white-listed on this server", open Coolify's
+terminal for the **minecraft** container and run:
+
+```sh
+rcon-cli whitelist list
+rcon-cli whitelist add YOUR_JAVA_PROFILE_NAME
+rcon-cli whitelist list
+```
+
+Replace `YOUR_JAVA_PROFILE_NAME` with your Minecraft Java profile name, which
+can differ from your Xbox gamertag. Repeat the add command for each missing
+player. Changes take effect immediately and are saved by Minecraft; no restart
+or `whitelist reload` is needed. Keep the whitelist enabled.
+
+### Preserve the allowlist across deployments
+
+Minecraft saves membership in `/data/whitelist.json`. The existing
+`craftopia-data:/data` named-volume mount persists that file along with the world.
+`EXISTING_WHITELIST_FILE: "SKIP"` tells the image's startup scripts to leave an
+existing allowlist alone, so RCON remains the source of membership changes. See
+the [upstream whitelist options](https://docker-minecraft-server.readthedocs.io/en/latest/configuration/server-properties/#whitelist-players).
+
+Deploy this Compose change through the existing Coolify application. Keep the
+same data volume and application resource; do not rename or delete the volume
+or run `docker compose down -v`. This setting preserves an existing list but
+cannot recover entries already lost, so add missing players using RCON above.
+
+If membership disappears again:
+
+1. Before and after redeploying, run `rcon-cli whitelist list` and
+   `cat /data/whitelist.json` in the Minecraft container terminal.
+2. In Coolify, check the deployed container's environment for `WHITELIST`,
+   `WHITELIST_FILE`, `OVERRIDE_WHITELIST`, and `EXISTING_WHITELIST_FILE` overrides.
+   Remove conflicting startup-managed membership settings and ensure the
+   deployed value of `EXISTING_WHITELIST_FILE` is `SKIP`.
+3. On the Docker host, compare the actual volume mounted at `/data` before and
+   after deployment (replace `CONTAINER_ID` with the Minecraft container ID):
+
+   ```sh
+   docker inspect CONTAINER_ID --format '{{range .Mounts}}{{if eq .Destination "/data"}}{{.Name}} -> {{.Destination}}{{end}}{{end}}'
+   ```
+
+   If the volume changed, reconnect the original volume while the server is
+   stopped, or follow the [recovery procedure](../../../docs/disaster-recovery.md).
+   A reset world also points to a different or empty data volume. Preserve both
+   volumes until recovery is verified.
+
 See the repository [`docs`](../../../docs/architecture.md) for networking,
 deployment, and recovery guidance.
