@@ -12,6 +12,11 @@ The backup archive volume is on the same Docker host as the world. Replicate it
 off-host; otherwise a disk or host failure can destroy both the world and its
 backups.
 
+The RCON web UI database is in the separate `craftopia-rcon-web` volume and is
+not included in the Minecraft backups. Back it up separately if dashboard
+settings or additional UI users need to be recovered. The configured admin
+account and Minecraft connection can be recreated from the Coolify variables.
+
 ## Before a risky change
 
 1. Confirm the last scheduled backup succeeded in the `backups` service logs.
@@ -45,7 +50,7 @@ Recreating the Compose stack from Git does not recreate the world. A complete
 recovery therefore needs:
 
 - The Git repository and desired commit.
-- Coolify secrets: `RCON_PASSWORD`, the tunnel private key, and the verified VPS
+- Coolify secrets: `RCON_PASSWORD`, `RCON_WEB_PASSWORD`, the tunnel private key, and the verified VPS
   host-key line.
 - An off-host world backup.
 - The VPS tunnel Compose application, persisted SSH host keys, forwarding

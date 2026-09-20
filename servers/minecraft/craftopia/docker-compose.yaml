@@ -37,6 +37,41 @@ services:
     volumes:
       - craftopia-data:/data
 
+  rcon-web:
+    # Multi-architecture image pinned for reproducible deployments.
+    image: ${RCON_WEB_IMAGE:-itzg/rcon@sha256:c9521f333bf9eaedf2db0acd750e67be88eaaa9c5e9026385bd875dc18a49110}
+    restart: unless-stopped
+    depends_on:
+      minecraft:
+        condition: service_healthy
+    environment:
+      TZ: ${TZ:-America/Los_Angeles}
+      RWA_ENV: "TRUE"
+      RWA_USERNAME: ${RCON_WEB_USERNAME:-admin}
+      RWA_PASSWORD: ${RCON_WEB_PASSWORD:?Set a separate RCON_WEB_PASSWORD in Coolify}
+      RWA_ADMIN: "TRUE"
+      RWA_GAME: minecraft
+      RWA_SERVER_NAME: ${SERVER_NAME:-Craftopia}
+      RWA_RCON_HOST: minecraft
+      RWA_RCON_PORT: "25575"
+      RWA_RCON_PASSWORD: ${RCON_PASSWORD:?Set RCON_PASSWORD in Coolify}
+      RWA_WEB_RCON: "FALSE"
+      # The console proxy serves the page and /ws on the same endpoint.
+      RWA_WEBSOCKET_URL: ${RCON_WEB_WEBSOCKET_URL:-ws://localhost:4326/ws}
+      RWA_WEBSOCKET_URL_SSL: ${RCON_WEB_WEBSOCKET_URL_SSL:-wss://console.mc.alextac.com/ws}
+    volumes:
+      - craftopia-rcon-web:/opt/rcon-web-admin/db
+
+  console:
+    build:
+      context: ./console
+    restart: unless-stopped
+    depends_on:
+      rcon-web:
+        condition: service_started
+    ports:
+      - "${RCON_WEB_BIND_ADDRESS:-127.0.0.1}:4326:8080"
+
   backups:
     image: ${BACKUP_IMAGE:-itzg/mc-backup:2026.8.2}
     restart: unless-stopped
@@ -87,3 +122,4 @@ services:
 volumes:
   craftopia-data:
   craftopia-backups:
+  craftopia-rcon-web:
