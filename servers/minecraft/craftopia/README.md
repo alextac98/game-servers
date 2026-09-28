@@ -71,6 +71,13 @@ See the [recovery runbook](../../../docs/disaster-recovery.md).
 
 ## Operations
 
+Minecraft pauses world simulation after 60 seconds with no players and resumes
+when a player joins. Set `PAUSE_WHEN_EMPTY_SECONDS` in Coolify to adjust the delay
+or `0` to disable it. Farms, mobs, and world time do not advance while paused.
+This uses Minecraft's native `pause-when-empty-seconds` property; leave the
+container's separate `ENABLE_AUTOPAUSE` feature disabled. The backup sidecar's
+`PAUSE_IF_NO_PLAYERS` setting only controls backup scheduling.
+
 Use the `rcon-web` browser console for whitelist and other live administration.
 Coolify continues to own deployments, container restarts, and container logs;
 Git owns mod lists and deployment configuration.

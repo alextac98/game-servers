@@ -27,6 +27,8 @@ services:
       MAX_PLAYERS: ${MAX_PLAYERS:-50}
       ENABLE_ROLLING_LOGS: ${ENABLE_ROLLING_LOGS:-true}
       ENABLE_AUTOPAUSE: ${ENABLE_AUTOPAUSE:-false}
+      # Use Minecraft's native idle pause; resume when a player joins.
+      PAUSE_WHEN_EMPTY_SECONDS: ${PAUSE_WHEN_EMPTY_SECONDS:-60}
 
       # RCON stays private and is shared with trusted services in this stack.
       ENABLE_RCON: "true"
