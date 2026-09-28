@@ -11,7 +11,8 @@ services:
 
       # Runtime and loader
       TYPE: ${MINECRAFT_TYPE:-FORGE}
-      VERSION: ${MINECRAFT_VERSION:-26.2}
+      VERSION: ${MINECRAFT_VERSION:-26.3}
+      FORGE_VERSION: ${FORGE_VERSION:-66.0.6}
       MEMORY: ${MEMORY:-4G}
 
       # Desired server configuration
@@ -31,7 +32,7 @@ services:
 
       # One project slug or pinned project version per line.
       MODRINTH_PROJECTS: |
-        fallingtree:26.2-26.2.0.3
+        fallingtree:26.3-26.3.0.2
     volumes:
       - craftopia-data:/data
 
