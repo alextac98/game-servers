@@ -24,14 +24,19 @@ Compose definitions do not create custom networks or fixed container names.
 The current Craftopia stack contains:
 
 - `minecraft`: the Java Edition server.
+- `rcon-web`: an authenticated browser console for Minecraft commands, with its
+  own persistent settings volume.
+- `console`: combines the web UI and WebSocket under `console.mc.alextac.com`
+  for the Coolify HTTPS proxy, plus one loopback-only port for SSH access.
 - `backups`: a sidecar that coordinates `save-off`, `save-all`, and `save-on`
   over the private RCON connection before archiving the data volume.
 - `tunnel`: an unprivileged OpenSSH client that exposes only the Minecraft game
   port through the public VPS and reconnects after network interruptions.
 
-RCON port `25575` is never published to the host. A future operator UI should be
-added to the same Compose stack and connect to the `minecraft` service over the
-private Coolify network.
+RCON port `25575` is never published to the host. The `rcon-web` UI connects to
+the `minecraft` service over the private Coolify network. Browser access uses
+SSH forwarding, a trusted LAN/VPN, or a protected HTTPS proxy; see the
+[Craftopia operations guide](../servers/minecraft/craftopia/README.md#browser-administration).
 
 LAN players connect directly to the Coolify host. Remote players connect to the
 containerized SSH endpoint on the VPS, which passes TCP `25565` through the
