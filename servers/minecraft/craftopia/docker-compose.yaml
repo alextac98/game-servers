@@ -11,7 +11,8 @@ services:
 
       # Runtime and loader
       TYPE: ${MINECRAFT_TYPE:-FORGE}
-      VERSION: ${MINECRAFT_VERSION:-26.2}
+      VERSION: ${MINECRAFT_VERSION:-26.3}
+      FORGE_VERSION: ${FORGE_VERSION:-66.0.6}
       MEMORY: ${MEMORY:-4G}
 
       # Desired server configuration
@@ -26,6 +27,8 @@ services:
       MAX_PLAYERS: ${MAX_PLAYERS:-50}
       ENABLE_ROLLING_LOGS: ${ENABLE_ROLLING_LOGS:-true}
       ENABLE_AUTOPAUSE: ${ENABLE_AUTOPAUSE:-false}
+      # Use Minecraft's native idle pause; resume when a player joins.
+      PAUSE_WHEN_EMPTY_SECONDS: ${PAUSE_WHEN_EMPTY_SECONDS:-60}
 
       # RCON stays private and is shared with trusted services in this stack.
       ENABLE_RCON: "true"
@@ -33,7 +36,7 @@ services:
 
       # One project slug or pinned project version per line.
       MODRINTH_PROJECTS: |
-        fallingtree:26.2-26.2.0.3
+        fallingtree:26.3-26.3.0.2
     volumes:
       - craftopia-data:/data
 
